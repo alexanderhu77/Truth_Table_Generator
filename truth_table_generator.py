@@ -12,11 +12,11 @@ def extract_variables(expr):
 def preprocess(expr):
     # print(f"DEBUG: Initial expression: {expr}")
     
-    # Step 1: Insert AND between adjacent variables (e.g., AB → A and B)
+    # Step 1: Insert AND between adjacent variables (e.g., AB -> A and B)
     expr = re.sub(r'(?<=[A-Za-z])(?=[A-Za-z])', r' and ', expr)
     # print(f"DEBUG: After inserting implicit AND between variables: {expr}")
     
-    # Step 2: Insert AND after NOT (e.g., X'Y → X' and Y)
+    # Step 2: Insert AND after NOT (e.g., X'Y -> X' and Y)
     expr = re.sub(r"([A-Za-z])'(?=[A-Za-z])", r"\1' and ", expr)
     # print(f"DEBUG: After inserting AND after NOT: {expr}")
     
@@ -32,7 +32,10 @@ def preprocess(expr):
     expr = expr.replace('(', ' ( ').replace(')', ' ) ')
     # print(f"DEBUG: After spacing parentheses: {expr}")
     
-    # Step 6: Tokenize and insert 'and' where needed (e.g., var followed by 'not' or '(')
+    # Step 6: Handle negation of expressions in parentheses (e.g., (A+B)' -> not (A or B))
+    expr = re.sub(r"\(\s*([^\(\)]+?)\s*\)\s*'", lambda m: f"not ( {m.group(1)} )", expr)
+
+    # Step 7: Tokenize and insert 'and' where needed (e.g., var followed by 'not' or '(')
     tokens = expr.split()
     # print(f"DEBUG: Tokens after split: {tokens}")
     
@@ -84,7 +87,7 @@ def generate_truth_table(raw_expr):
 
 def main():
     parser = argparse.ArgumentParser(description="Generate a truth table from a Boolean expression like A'B+C or WXYZ.")
-    parser.add_argument("expr", help="Boolean expression using + (or), ' (not), implicit AND")
+    parser.add_argument("expr", help="Boolean expression using + (OR), ' (NOT), implicit AND")
     args = parser.parse_args()
     generate_truth_table(args.expr)
 
