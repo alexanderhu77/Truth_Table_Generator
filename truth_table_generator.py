@@ -1,43 +1,35 @@
 import argparse
-import itertools
 import re
+import itertools
 
 def extract_variables(expr):
     # Extract all single-letter variable names, including from continuous strings like WXYZ
     tokens = re.findall(r'[A-Za-z]', expr)
     keywords = {'and', 'or', 'not'}
-    # print(f"DEBUG: Extracted tokens: {tokens}")
     return sorted(set(t for t in tokens if t not in keywords))
 
 def preprocess(expr):
-    # print(f"DEBUG: Initial expression: {expr}")
     
     # Step 1: Insert AND between adjacent variables (e.g., AB -> A and B)
     expr = re.sub(r'(?<=[A-Za-z])(?=[A-Za-z])', r' and ', expr)
-    # print(f"DEBUG: After inserting implicit AND between variables: {expr}")
     
     # Step 2: Insert AND after NOT (e.g., X'Y -> X' and Y)
     expr = re.sub(r"([A-Za-z])'(?=[A-Za-z])", r"\1' and ", expr)
-    # print(f"DEBUG: After inserting AND after NOT: {expr}")
     
     # Step 3: Replace A' with not A
     expr = re.sub(r"([A-Za-z])'", r"not \1", expr)
-    # print(f"DEBUG: After replacing ' with not: {expr}")
-    
+     
     # Step 4: Replace + with or
     expr = expr.replace('+', ' or ')
-    # print(f"DEBUG: After replacing + with or: {expr}")
     
     # Step 5: Space out parentheses
     expr = expr.replace('(', ' ( ').replace(')', ' ) ')
-    # print(f"DEBUG: After spacing parentheses: {expr}")
     
     # Step 6: Handle negation of expressions in parentheses (e.g., (A+B)' -> not (A or B))
     expr = re.sub(r"\(\s*([^\(\)]+?)\s*\)\s*'", lambda m: f"not ( {m.group(1)} )", expr)
 
     # Step 7: Tokenize and insert 'and' where needed (e.g., var followed by 'not' or '(')
     tokens = expr.split()
-    # print(f"DEBUG: Tokens after split: {tokens}")
     
     new_tokens = []
     i = 0
@@ -50,40 +42,35 @@ def preprocess(expr):
             nxt_is_atom = re.fullmatch(r'[A-Za-z]', nxt) or nxt == '(' or nxt == 'not'
             if curr_is_atom and nxt_is_atom:
                 new_tokens.append('and')
-                # print(f"DEBUG: Inserting 'and' between '{curr}' and '{nxt}'")
         i += 1
     
     final_expr = ' '.join(new_tokens)
-    # print(f"DEBUG: Final preprocessed expression: {final_expr}")
+
     return final_expr
 
 def generate_truth_table(raw_expr):
     variables = extract_variables(raw_expr)
     expr = preprocess(raw_expr)
 
-    print("\nDetected variables:", variables)
-    print("Parsed expression:", expr)
+    print("\nParsed expression:", expr)
     print()
     print(" | ".join(variables) + " | Output")
-    print("-" * (5 * len(variables) + 9))
+    print("-" * (5 * len(variables) + 5))
 
     # Ensure all combinations are generated
     all_combinations = list(itertools.product([0, 1], repeat=len(variables)))
-    # print(f"DEBUG: Total combinations generated: {len(all_combinations)}")
     
     for values in all_combinations:
         context = {var: bool(val) for var, val in zip(variables, values)}
         
-        # print(f"DEBUG: Context for evaluation: {context}")
         try:
             result = eval(expr, {}, context)
-            # print(f"DEBUG: Evaluated {expr} = {result}")
         except Exception as e:
             result = f"ERR({e})"
-            # print(f"DEBUG: Error evaluating {expr}: {e}")
 
         row = " | ".join(str(v) for v in values)
         print(f"{row} |   {int(bool(result)) if isinstance(result, (bool, int)) else result}")
+        print("-" * (5 * len(variables) + 5))
 
 def main():
     parser = argparse.ArgumentParser(description="Generate a truth table from a Boolean expression like A'B+C or WXYZ.")
