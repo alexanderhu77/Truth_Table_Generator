@@ -11,7 +11,7 @@ def extract_variables(expr):
 def preprocess(expr):
     
     # Step 1: Insert AND between adjacent variables (e.g., AB -> A and B)
-    expr = re.sub(r'(?<=[A-Za-z])(?=[A-Za-z])', r' and ', expr)
+    expr = re.sub(r'(?<=[A-Za-z])(?=[A-Za-z\(])', r' and ', expr)
     
     # Step 2: Insert AND after NOT (e.g., X'Y -> X' and Y)
     expr = re.sub(r"([A-Za-z])'(?=[A-Za-z])", r"\1' and ", expr)
@@ -26,7 +26,7 @@ def preprocess(expr):
     expr = expr.replace('(', ' ( ').replace(')', ' ) ')
     
     # Step 6: Handle negation of expressions in parentheses (e.g., (A+B)' -> not (A or B))
-    expr = re.sub(r"\(\s*([^\(\)]+?)\s*\)\s*'", lambda m: f"not ( {m.group(1)} )", expr)
+    expr = re.sub(r"\(\s*([^\(\)]+?)\s*\)\s*'", lambda m: f"not ( {m.group(1)} ) ", expr)
 
     # Step 7: Tokenize and insert 'and' where needed (e.g., var followed by 'not' or '(')
     tokens = expr.split()
