@@ -54,23 +54,24 @@ def generate_truth_table(raw_expr):
 
     print("\nParsed expression:", expr)
     print()
-    print(" | ".join(variables) + " | Output")
-    print("-" * (5 * len(variables) + 5))
+    print(" | ".join(variables) + " | Output | Minterm")
+    print("-" * (6 * len(variables) + 14))
 
     # Ensure all combinations are generated
     all_combinations = list(itertools.product([0, 1], repeat=len(variables)))
     
-    for values in all_combinations:
+    for idx, values in enumerate(all_combinations):
         context = {var: bool(val) for var, val in zip(variables, values)}
-        
+
         try:
             result = eval(expr, {}, context)
         except Exception as e:
             result = f"ERR({e})"
 
         row = " | ".join(str(v) for v in values)
-        print(f"{row} |   {int(bool(result)) if isinstance(result, (bool, int)) else result}")
-        print("-" * (5 * len(variables) + 5))
+        output = int(bool(result)) if isinstance(result, (bool, int)) else result
+        print(f"{row} |   {output}    | {idx}")
+        print("-" * (6 * len(variables) + 14))
 
 def main():
     parser = argparse.ArgumentParser(description="Generate a truth table from a Boolean expression like A'B+C or WXYZ.")
