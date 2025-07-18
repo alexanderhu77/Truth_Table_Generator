@@ -10,6 +10,7 @@ This Python script generates a truth table for any Boolean expression using **si
 
 - Supports any number of variables
 - Outputs a full truth table with all combinations
+- Outputs corresponding minterms and maxterms 
 
 ---
 
