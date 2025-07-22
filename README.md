@@ -4,7 +4,7 @@ This Python script generates a truth table for any Boolean expression using **si
 
 - `+` for **OR** (e.g., `A+B` means A OR B)
 - `'` for **NOT** (e.g., `A'` means NOT A)
-- Parentheses or no symbol for **AND** (e.g., `A(B)` as well as `AB` means A AND B)
+- Parentheses or no symbol for **AND** (e.g., `A(B)` as well as `AB` both mean A AND B)
 
 ## Features
 
