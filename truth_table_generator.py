@@ -22,13 +22,16 @@ def preprocess(expr):
     # Step 4: Replace + with or
     expr = expr.replace('+', ' or ')
     
-    # Step 5: Space out parentheses
+    # Step 5: Replace ^ with != for XOR operation
+    expr = expr.replace('^', ' != ')
+
+    # Step 6: Space out parentheses
     expr = expr.replace('(', ' ( ').replace(')', ' ) ')
     
-    # Step 6: Handle negation of expressions in parentheses (e.g., (A+B)' -> not (A or B))
+    # Step 7: Handle negation of expressions in parentheses (e.g., (A+B)' -> not (A or B))
     expr = re.sub(r"\(\s*([^\(\)]+?)\s*\)\s*'", lambda m: f"not ( {m.group(1)} ) ", expr)
 
-    # Step 7: Tokenize and insert 'and' where needed (e.g., var followed by 'not' or '(')
+    # Step 8: Tokenize and insert 'and' where needed (e.g., var followed by 'not' or '(')
     tokens = expr.split()
     
     new_tokens = []
@@ -52,7 +55,7 @@ def generate_truth_table(raw_expr):
     variables = extract_variables(raw_expr)
     expr = preprocess(raw_expr)
 
-    print("\nParsed expression:", expr)
+    print("\nParsed expression:", expr.replace("!=", "XOR"))
     print()
     print(" | ".join(variables) + " | Output | Minterm | Maxterm")
     print("-" * (6 * len(variables) + 24))

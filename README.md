@@ -3,6 +3,7 @@
 This Python script generates a truth table for any Boolean expression using **single-letter variables** (like `A`, `B`, `X`, `Y`, `Z`). It accepts input expressions with:
 
 - `+` for **OR** (e.g., `A+B` means A OR B)
+- `^` for **XOR** (e.g., `A^B` means A XOR B)
 - `'` for **NOT** (e.g., `A'` means NOT A)
 - Parentheses or no symbol for **AND** (e.g., `A(B)` as well as `AB` both mean A AND B)
 
@@ -32,3 +33,4 @@ python truth_table_generator.py "{EXPRESSION}"
 - (XY)'Z  means NOT (X AND Y) AND Z
 - AB(C+D)' means A AND B AND NOT (C OR D)
 - WXYZ    means W AND X AND Y AND Z
+- A^B^C    means A XOR B XOR C
