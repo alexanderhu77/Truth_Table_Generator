@@ -51,7 +51,7 @@ def preprocess(expr):
 
     return final_expr
 
-def generate_truth_table(raw_expr):
+def generate_truth_table(raw_expr, show_kmap=False):
     variables = extract_variables(raw_expr)
     expr = preprocess(raw_expr)
 
@@ -63,6 +63,7 @@ def generate_truth_table(raw_expr):
     # Ensure all combinations are generated
     all_combinations = list(itertools.product([0, 1], repeat=len(variables)))
     
+    kmap_data = {}
     for idx, values in enumerate(all_combinations):
         context = {var: bool(val) for var, val in zip(variables, values)}
 
@@ -79,12 +80,63 @@ def generate_truth_table(raw_expr):
         row = " | ".join(str(v) for v in values)
         print(f"{row} |   {output}    | {minterm:^8} | {maxterm:^8}")
         print("-" * (6 * len(variables) + 24))
+        if isinstance(output, int):
+            kmap_data[tuple(values)] = output
+
+    if show_kmap:
+        display_kmap(variables, kmap_data)
+
+def display_kmap(variables, kmap_data):
+    print("\nKarnaugh Map:\n")
+
+    def cell(val):
+        return f"{str(val) if val in [0, 1] else ' ':^7}"
+
+    def print_row(label, values):
+        label_str = label.ljust(8)
+        row = " | ".join(cell(kmap_data.get(key, 0)) for key in values)
+        print(f"{label_str}| {row} |")
+
+    def print_border(num_cols):
+        border = "+".join(["-" * 9] * (num_cols))
+        print(f"        +{border}+")
+
+    if len(variables) == 2:
+        print(f"        {variables[1]}")
+        print(f"          {'0':^7} | {'1':^7}")
+        print_border(2)
+        for a in [0, 1]:
+            keys = [(a, 0), (a, 1)]
+            print_row(f"{variables[0]}={a}", keys)
+            print_border(2)
+
+    elif len(variables) == 3:
+        print(f"        {variables[1]}{variables[2]}")
+        print(f"          {'00':^7} | {'01':^7} | {'11':^7} | {'10':^7}")
+        print_border(4)
+        for a in [0, 1]:
+            keys = [(a, 0, 0), (a, 0, 1), (a, 1, 1), (a, 1, 0)]
+            print_row(f"{variables[0]}={a}", keys)
+            print_border(4)
+
+    elif len(variables) == 4:
+        print(f"        {variables[2]}{variables[3]}")
+        print(f"          {'00':^7} | {'01':^7} | {'11':^7} | {'10':^7}")
+        print_border(4)
+        for ab in [(0, 0), (0, 1), (1, 1), (1, 0)]:
+            keys = [(*ab, 0, 0), (*ab, 0, 1), (*ab, 1, 1), (*ab, 1, 0)]
+            print_row(f"{variables[0]}{variables[1]}={ab[0]}{ab[1]}", keys)
+            print_border(4)
+
+    else:
+        print("K-map display is only supported for 2, 3, or 4 variables.")
 
 def main():
     parser = argparse.ArgumentParser(description="Generate a truth table from a Boolean expression like A'B+C or WXYZ.")
-    parser.add_argument("expr", help="Boolean expression using + (OR), ' (NOT), implicit AND")
+    parser.add_argument("-k", "--karnaugh", action="store_true", help="Enable karnaugh map display.")
+    parser.add_argument("expr", help="Boolean expression using + (OR), ' (NOT), implicit AND")    
     args = parser.parse_args()
-    generate_truth_table(args.expr)
+    generate_truth_table(args.expr, show_kmap=args.karnaugh)
 
 if __name__ == "__main__":
     main()
