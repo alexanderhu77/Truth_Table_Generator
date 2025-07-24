@@ -102,8 +102,11 @@ def display_kmap(variables, kmap_data):
         print(f"        +{border}+")
 
     if len(variables) == 2:
-        print(f"        {variables[1]}")
-        print(f"          {'0':^7} | {'1':^7}")
+        label0 = f"{variables[1]}=0"
+        label1 = f"{variables[1]}=1"
+        print(f"          {label0:^7} | {label1:^7}")
+
+
         print_border(2)
         for a in [0, 1]:
             keys = [(a, 0), (a, 1)]
