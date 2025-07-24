@@ -12,6 +12,7 @@ This Python script generates a truth table for any Boolean expression using **si
 - Supports any number of variables
 - Outputs a full truth table with all combinations
 - Outputs corresponding minterms and maxterms 
+- The `-k` flag will display a Karnaugh Map
 
 ---
 
@@ -22,7 +23,7 @@ This Python script generates a truth table for any Boolean expression using **si
 2. Run it from the command line, passing in a Boolean expression. Exanples: `XY'Z`, `X+Y+Z`, and `a+XY'+Bh`. If spaces are included in the expression, quotes must be used. Syntax:
 
 ```bash
-python truth_table_generator.py "{EXPRESSION}"
+python truth_table_generator.py "{flags}" "{EXPRESSION}"
 ```
 ## Examples of Expressions
 
