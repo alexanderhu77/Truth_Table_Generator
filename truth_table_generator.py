@@ -28,7 +28,7 @@ def preprocess(expr):
     # Step 6: Space out parentheses
     expr = expr.replace('(', ' ( ').replace(')', ' ) ')
     
-    # Step 7: Handle negation of expressions in parentheses (e.g., (A+B)' -> not (A or B))
+    # Step 7: Handle negation of expressions in parentheses (e.g., (A or B)' -> not (A or B))
     expr = re.sub(r"\(\s*([^\(\)]+?)\s*\)\s*'", lambda m: f"not ( {m.group(1)} ) ", expr)
 
     # Step 8: Tokenize and insert 'and' where needed (e.g., var followed by 'not' or '(')
