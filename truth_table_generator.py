@@ -137,7 +137,7 @@ def display_kmap(variables, kmap_data):
 def main():
     parser = argparse.ArgumentParser(description="Generate a truth table from a Boolean expression like A'B+C or WXYZ.")
     parser.add_argument("-k", "--karnaugh", action="store_true", help="Enable Karnaugh Map display for up to 4 variables")
-    parser.add_argument("expr", help="Boolean expression using + (OR), ' (NOT), implicit AND, and parentheses for grouping AND operations")
+    parser.add_argument("expr", help="Boolean expression using + (OR), ' (NOT), ^ (XOR), implicit AND, and parentheses for grouping AND operations")
     args = parser.parse_args()
     generate_truth_table(args.expr, show_kmap=args.karnaugh)
 
